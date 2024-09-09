@@ -31,21 +31,68 @@ def get_by_id(request, id):
             usuario = Usuario.objects.get(pk="euzinha")
             print(f"olha o usuário: {usuario}")
             serializer = UsuarioSerializer(usuario)
+            return Response(serializer.data)
         except:
             print(Exception)
             return Response(status=status.HTTP_404_NOT_FOUND)
         
         
-        return Response(serializer.data)
 
-# @api_view(['GET', 'POST', 'PUT', 'DELETE'])
-# def usuario_manager(request):
+@api_view(['GET', 'POST', 'PUT', 'DELETE'])
+def usuario_manager(request):
     
-#     if request.method == 'GET':
+    if request.method == 'GET':
         
-#         try:
-#             request.GET['nome']:
+        try:
+            if request.GET['id']:
                 
-#                 nome = request.GET[nome]  
+                id_user = request.GET['id']
                 
-                 
+                try:
+                    id = Usuario.objects.get(pk=id_user)
+                except:
+                    return Response(status=status.HTTP_404_NOT_FOUND)
+                    
+                serializer = UsuarioSerializer(id)
+                return Response(serializer.data)
+            
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+                
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+              
+              
+    if request.method == 'POST':
+    
+        novo_usuario = request.data 
+        
+        serializer = UsuarioSerializer(data=novo_usuario)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+    
+    if request.method == 'PUT':
+        
+        id = request.data['id_user'] 
+        
+        update_id = Usuario.objects.get(pk=id)
+        
+        print(request.data)
+        
+        serializer = UsuarioSerializer(update_id, data=request.data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+    
+    # if request.method == 'DELETE':
+        
+                      
