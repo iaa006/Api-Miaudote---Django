@@ -25,17 +25,15 @@ def get_usuarios(request):
 
 @api_view(['GET'])
 def get_by_id(request, id):
-        
+    
+    try:
+        usuario = Usuario.objects.get(pk="id")    
+    except:
+        return Response(status=status.HTTP_404_NOT_FOUND) 
+      
     if request.method == 'GET':
-        try:
-            usuario = Usuario.objects.get(pk="euzinha")
-            print(f"olha o usuário: {usuario}")
-            serializer = UsuarioSerializer(usuario)
-            return Response(serializer.data)
-        except:
-            print(Exception)
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        
+        serializer = UsuarioSerializer(usuario)
+        return Response(serializer.data)
         
 
 @api_view(['GET', 'POST', 'PUT', 'DELETE'])
@@ -80,7 +78,10 @@ def usuario_manager(request):
         
         id = request.data['id_user'] 
         
-        update_id = Usuario.objects.get(pk=id)
+        try:
+            update_id = Usuario.objects.get(pk=id)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         
         print(request.data)
         
@@ -93,6 +94,13 @@ def usuario_manager(request):
         return Response(status=status.HTTP_400_BAD_REQUEST)
     
     
-    # if request.method == 'DELETE':
+    if request.method == 'DELETE':
+        
+        try:
+            id_p_deletar = Usuario.objects.get(pk=request.data['id_user'])
+            id_p_deletar.delete()
+            return Response(status=status.HTTP_202_ACCEPTED)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         
                       
